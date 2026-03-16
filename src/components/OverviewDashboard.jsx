@@ -5,7 +5,9 @@ import {
   BarChart, Bar, Cell,
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from 'recharts';
-import { TrendingUp, Package, DollarSign, Activity, Target, RefreshCw, AlertCircle } from 'lucide-react';
+import { TrendingUp, Package, DollarSign, Activity, Target, RefreshCw, AlertCircle, Download } from 'lucide-react';
+import { useApp } from '../context/AppContext';
+import { exportOverview } from '../utils/exportUtils';
 
 /* ─── Soft UI icon box ─── */
 const IconBox = ({ icon: Icon, gradient = 'gradient-brand', shadow = 'shadow-soft-brand' }) => (
@@ -39,13 +41,14 @@ const ChartTooltip = ({ active, payload, label, isCurrency }) => {
 const formatCurrency = (val) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
-const OverviewDashboard = ({
-  stockData,
-  shipmentsData,
-  monthlyPurchasesData,
-  hasShipments,
-  presentationSettings,
-}) => {
+const OverviewDashboard = () => {
+  const {
+    stockData, filteredMonthlyData: monthlyPurchasesData,
+    shipmentsData, hasShipments, presentationSettings,
+    goals, clientProfile, periodFilter,
+  } = useApp();
+  const ticketMedioIdeal   = goals.ticketMedio;
+  const frequenciaIdeal    = goals.frequencia;
   /* ─── KPIs ─── */
   const totalItemsSold = useMemo(
     () => (monthlyPurchasesData ?? []).reduce((a, c) => a + (c.totalUnits ?? 0), 0),
@@ -59,9 +62,7 @@ const OverviewDashboard = ({
 
   const avgTicket = totalSales / (totalItemsSold || 1);
 
-  /* ─── Benchmarks ─── */
-  const ticketMedioIdeal = 250;
-  const frequenciaIdeal = 3500;
+  /* ─── Benchmarks vêm do AppContext (configuráveis em Settings) ─── */
 
   /* ─── Radar ─── */
   const radarData = [
@@ -121,6 +122,16 @@ const OverviewDashboard = ({
 
   return (
     <div className="space-y-6">
+      {/* Export button */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => exportOverview({ monthlyPurchasesData, stockData, clientProfile, periodFilter })}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          <Download className="w-4 h-4" />
+          Exportar Excel
+        </button>
+      </div>
 
       {/* ══════════════════════════════════════
           KPI Cards — Soft UI style

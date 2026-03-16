@@ -1,8 +1,11 @@
 import React, { useMemo } from 'react';
-import { AlertOctagon, TrendingDown, ArrowRight, Activity, ShieldAlert, BarChart3, ShieldCheck } from 'lucide-react';
+import { AlertOctagon, TrendingDown, ArrowRight, Activity, ShieldAlert, BarChart3, ShieldCheck, Download } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ReferenceLine } from 'recharts';
+import { useApp } from '../context/AppContext';
+import { exportRestock } from '../utils/exportUtils';
 
-const PredictiveRestockTab = ({ stockData, shipmentsData, monthlyPurchasesData, onAddToCart, presentationSettings }) => {
+const PredictiveRestockTab = () => {
+ const { stockData, monthlyPurchasesData, shipmentsData, addToCart: onAddToCart, presentationSettings, clientProfile } = useApp();
  const formatCurrency = (val) => {
  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
  };
@@ -121,23 +124,28 @@ const PredictiveRestockTab = ({ stockData, shipmentsData, monthlyPurchasesData, 
  };
 
  return (
- <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 h-full flex flex-col relative zoom-in-[0.98] pb-24">
- 
- {/* Animated Background Blobs for Premium Feel */}
- 
+ <div className="space-y-6">
+
  {/* Header */}
- <div className="mb-8">
- <div className="flex items-center gap-3 mb-2">
- <div className="w-12 h-12 rounded-sm bg-rose-100 flex items-center justify-center dark:bg-rose-500/10">
- <AlertOctagon className="w-6 h-6 text-rose-500" />
+ <div className="flex flex-wrap items-start justify-between gap-4 mb-2">
+ <div className="flex items-center gap-3">
+ <div className="soft-icon-box gradient-error w-12 h-12" style={{ boxShadow: 'var(--shadow-soft-error)' }}>
+ <AlertOctagon className="w-6 h-6" />
  </div>
-  <h3 className="text-3xl font-space font-bold text-gray-900 dark:text-white mt-1 tracking-tight">
-  Alerta de Ruptura
-  </h3>
+ <div>
+  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Alerta de Ruptura</h3>
+  <p className="text-sm text-gray-500 dark:text-gray-400">
+  SKUs de alto giro com risco de ficar sem estoque
+  </p>
  </div>
- <p className="text-gray-500 dark:text-gray-400 text-lg max-w-3xl ml-15">
- O modelo preditivo identificou SKUs de alto giro que <strong className="text-rose-400">estão prestes a acabar</strong> na loja do cliente. Use o gatilho da urgência para puxar a reposição agora.
- </p>
+ </div>
+ <button
+   onClick={() => exportRestock({ ruptureRisks, clientProfile })}
+   className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+ >
+   <Download className="w-4 h-4" />
+   Exportar Excel
+ </button>
  </div>
 
  {/* Main Content Grid */}

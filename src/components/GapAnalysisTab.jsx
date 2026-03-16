@@ -3,7 +3,9 @@ import {
   ComposedChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip as RechartsTooltip, ResponsiveContainer, Cell, Legend,
 } from 'recharts';
-import { AlertTriangle, TrendingDown, TrendingUp, Info, ArrowUpRight } from 'lucide-react';
+import { AlertTriangle, TrendingDown, TrendingUp, Info, ArrowUpRight, Download } from 'lucide-react';
+import { useApp } from '../context/AppContext';
+import { exportGapAnalysis } from '../utils/exportUtils';
 
 const fmt = (val) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
@@ -26,7 +28,8 @@ const ChartTooltip = ({ active, payload, label, hideCosts }) => {
   );
 };
 
-const GapAnalysisTab = ({ shipmentsData, monthlyPurchasesData, hasShipments, presentationSettings }) => {
+const GapAnalysisTab = () => {
+  const { filteredMonthlyData: monthlyPurchasesData, shipmentsData, hasShipments, presentationSettings, clientProfile } = useApp();
   const MONTHS_LOW = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 
   /**
@@ -86,6 +89,15 @@ const GapAnalysisTab = ({ shipmentsData, monthlyPurchasesData, hasShipments, pre
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-end">
+        <button
+          onClick={() => exportGapAnalysis({ monthlyPurchasesData, clientProfile })}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          <Download className="w-4 h-4" />
+          Exportar Excel
+        </button>
+      </div>
 
       {/* ══════════════ Hero: Custo de Oportunidade ══════════════ */}
       <div className="soft-card p-8 border-l-4 border-l-error-400 relative overflow-hidden">

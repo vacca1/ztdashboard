@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, Send, User, Sparkles, Loader2, BarChart2 } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 
-const AiCopilotTab = ({ stockData, topProductsData, shipmentsData }) => {
+const AiCopilotTab = () => {
+ const { stockData, filteredMonthlyData: topProductsData, shipmentsData } = useApp();
  const [messages, setMessages] = useState([
  {
  id: 1,
