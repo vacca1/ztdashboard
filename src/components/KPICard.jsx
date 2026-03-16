@@ -118,16 +118,18 @@ const KPICard = ({
  )}
  </div>
 
- {/* Metric value with animation */}
- <motion.div
- variants={metricVariants}
- initial="initial"
- animate="animate"
- transition={{ delay: delay + 0.2 }}
- className="flex-1 flex items-center"
- >
- <h3 className="metric-value text-4xl">{formatValue(value)}</h3>
- </motion.div>
+  {/* Metric value with animation */}
+  <motion.div
+  variants={metricVariants}
+  initial="initial"
+  animate="animate"
+  transition={{ delay: delay + 0.2 }}
+  className="flex-1 flex items-center"
+  >
+  <h3 className="metric-value font-space text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+      {formatValue(value)}
+  </h3>
+  </motion.div>
 
  {/* Trend indicator */}
  {trend && (
@@ -163,12 +165,8 @@ const KPICard = ({
  )}
  </div>
 
- {/* Glow effect on hover */}
- <div
- className={`absolute -bottom-24 -right-24 w-48 h-48 bg-gradient-to-br ${scheme.bg} rounded-full blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none`}
- />
- </div>
- </motion.div>
+  </div>
+  </motion.div>
  );
 };
 

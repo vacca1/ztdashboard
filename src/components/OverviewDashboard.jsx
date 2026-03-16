@@ -111,89 +111,89 @@ const OverviewDashboard = ({ stockData, shipmentsData, monthlyPurchasesData, has
  {/* KPIs Grid */}
  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
  
- {/* KPI 1: Faturamento */}
- <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark border-l-[4px] border-l-brand-400 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
- <div className="flex justify-between items-start mb-4 relative z-10">
- <div>
- <p className="text-gray-500 dark:text-gray-400 text-sm font-medium tracking-wide">Faturamento Histórico</p>
- <h3 className="text-3xl font-bold text-gray-800 dark:text-white/90 mt-1 tracking-tight">
- {presentationSettings?.hideCosts ? 'R$ ***,**' : formatCurrency(totalSales)}
- </h3>
- </div>
- <div className="w-12 h-12 rounded-sm bg-brand-500/20 flex items-center justify-center text-brand-300 shadow-[0_0_15px_rgba(70,108,192,0.3)]">
- <DollarSign className="w-6 h-6" />
- </div>
- </div>
- <div className="flex items-center gap-2 text-sm text-emerald-400 font-medium relative z-10">
- <TrendingUp className="w-4 h-4" />
- <span>Top 15% Sustentação na região</span>
- </div>
- </div>
+  {/* KPI 1: Faturamento */}
+  <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark border-l-[4px] border-l-brand-500 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+  <div className="flex justify-between items-start mb-4 relative z-10">
+  <div>
+  <p className="text-gray-500 dark:text-gray-400 text-sm font-medium tracking-wide">Faturamento Histórico</p>
+  <h3 className="text-3xl font-space font-bold text-gray-900 dark:text-white mt-1 tracking-tight">
+  {presentationSettings?.hideCosts ? 'R$ ***,**' : formatCurrency(totalSales)}
+  </h3>
+  </div>
+  <div className="w-12 h-12 rounded-sm bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 border border-stroke dark:border-strokedark">
+  <DollarSign className="w-6 h-6" />
+  </div>
+  </div>
+  <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 font-medium relative z-10">
+  <TrendingUp className="w-4 h-4" />
+  <span>Top 15% Sustentação na região</span>
+  </div>
+  </div>
 
- {/* KPI 2: Itens */}
- <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark border-l-[4px] border-l-purple-400 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
- <div className="flex justify-between items-start mb-4 relative z-10">
- <div>
- <p className="text-gray-500 dark:text-gray-400 text-sm font-medium tracking-wide">Giro de Produtos</p>
- <h3 className="text-3xl font-bold text-gray-800 dark:text-white/90 mt-1 tracking-tight">{totalItemsSold.toLocaleString('pt-BR')} <span className="text-lg text-gray-500 dark:text-gray-400 font-normal">und</span></h3>
- </div>
- <div className="w-12 h-12 rounded-sm bg-purple-500/20 flex items-center justify-center text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
- <Package className="w-6 h-6" />
- </div>
- </div>
- <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 relative z-10">
- Potencial para diversificação de mix
- </div>
- </div>
+  {/* KPI 2: Itens */}
+  <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark border-l-[4px] border-l-brand-600 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+  <div className="flex justify-between items-start mb-4 relative z-10">
+  <div>
+  <p className="text-gray-500 dark:text-gray-400 text-sm font-medium tracking-wide">Giro de Produtos</p>
+  <h3 className="text-3xl font-space font-bold text-gray-900 dark:text-white mt-1 tracking-tight">{totalItemsSold.toLocaleString('pt-BR')} <span className="text-lg text-gray-500 dark:text-gray-400 font-normal">und</span></h3>
+  </div>
+  <div className="w-12 h-12 rounded-sm bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 border border-stroke dark:border-strokedark">
+  <Package className="w-6 h-6" />
+  </div>
+  </div>
+  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 relative z-10">
+  Potencial para diversificação de mix
+  </div>
+  </div>
 
- {/* KPI 3: Ticket Medio */}
- <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark border-l-[4px] border-l-emerald-400 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
- <div className="flex justify-between items-start mb-4 relative z-10">
- <div>
- <p className="text-gray-500 dark:text-gray-400 text-sm font-medium tracking-wide">Ticket Médio (TM)</p>
- <div className="flex items-end gap-3">
- <h3 className="text-3xl font-bold text-gray-800 dark:text-white/90 mt-1 tracking-tight">
- {presentationSettings?.hideCosts ? 'R$ ***,**' : formatCurrency(avgTicket)}
- </h3>
- </div>
- </div>
- <div className="w-12 h-12 rounded-sm bg-emerald-500/20 flex items-center justify-center text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
- <Activity className="w-6 h-6" />
- </div>
- </div>
- {/* Anchoring Psychology: Showing they are below the ideal to trigger a need */}
- <div className="w-full rounded-full h-1.5 mb-2 mt-1 relative z-10 overflow-hidden">
- <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: `${Math.min((avgTicket / ticketMedioIdeal) * 100, 100)}%` }}></div>
- </div>
- <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 relative z-10">
- <span>TM Atual</span>
- <span className="text-emerald-400 font-medium">Meta SC: {formatCurrency(ticketMedioIdeal)}</span>
- </div>
- </div>
+  {/* KPI 3: Ticket Medio */}
+  <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark border-l-[4px] border-l-brand-400 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+  <div className="flex justify-between items-start mb-4 relative z-10">
+  <div>
+  <p className="text-gray-500 dark:text-gray-400 text-sm font-medium tracking-wide">Ticket Médio (TM)</p>
+  <div className="flex items-end gap-3">
+  <h3 className="text-3xl font-space font-bold text-gray-900 dark:text-white mt-1 tracking-tight">
+  {presentationSettings?.hideCosts ? 'R$ ***,**' : formatCurrency(avgTicket)}
+  </h3>
+  </div>
+  </div>
+  <div className="w-12 h-12 rounded-sm bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 border border-stroke dark:border-strokedark">
+  <Activity className="w-6 h-6" />
+  </div>
+  </div>
+  <div className="w-full rounded-full h-1.5 mb-2 mt-1 relative z-10 overflow-hidden bg-gray-100 dark:bg-gray-800">
+  <div className="bg-brand-500 h-1.5 rounded-full" style={{ width: `${Math.min((avgTicket / ticketMedioIdeal) * 100, 100)}%` }}></div>
+  </div>
+  <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 relative z-10">
+  <span>TM Atual</span>
+  <span className="text-brand-500 font-medium">Meta SC: {formatCurrency(ticketMedioIdeal)}</span>
+  </div>
+  </div>
 
- {/* KPI 4: Marcadores Inteligentes */}
- <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark border-l-[4px] border-l-amber-400 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
- <div className="flex justify-between items-start mb-4 relative z-10">
- <div>
- <p className="text-gray-500 dark:text-gray-400 text-sm font-medium tracking-wide">Itens em Embarque</p>
- <h3 className="text-3xl font-bold text-gray-800 dark:text-white/90 mt-1 tracking-tight">{shipmentsData?.detailed?.length || 0} <span className="text-lg font-normal text-gray-500 dark:text-gray-400">SKUs</span></h3>
- </div>
- <div className="w-12 h-12 rounded-sm bg-amber-500/20 flex items-center justify-center text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
- <Target className="w-6 h-6" />
- </div>
- </div>
- <div className="flex flex-col gap-2 text-xs relative z-10">
- <div className="flex items-center gap-2 text-emerald-400">
- <div className="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
- <span>{mostReorderedProducts.length > 0 ? mostReorderedProducts[0].name : 'N/A'}</span>
- <span className="text-gray-500 dark:text-gray-400">- Mais reposto ({mostReorderedProducts.length > 0 ? mostReorderedProducts[0].reorderCount : 0}x)</span>
- </div>
- <div className="flex items-center gap-2 text-rose-400">
- <div className="w-1.5 h-1.5 rounded-full bg-rose-400"></div>
- <span className="line-clamp-1">{neverPurchasedProducts.length} produtos em estoque nunca comprados</span>
- </div>
- </div>
- </div>
+  {/* KPI 4: Marcadores Inteligentes */}
+  <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark border-l-[4px] border-l-slate-400 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+  <div className="flex justify-between items-start mb-4 relative z-10">
+  <div>
+  <p className="text-gray-500 dark:text-gray-400 text-sm font-medium tracking-wide">Itens em Embarque</p>
+  <h3 className="text-3xl font-space font-bold text-gray-900 dark:text-white mt-1 tracking-tight">{shipmentsData?.detailed?.length || 0} <span className="text-lg font-normal text-gray-500 dark:text-gray-400">SKUs</span></h3>
+  </div>
+  <div className="w-12 h-12 rounded-sm bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 border border-stroke dark:border-strokedark">
+  <Target className="w-6 h-6" />
+  </div>
+  </div>
+  <div className="flex flex-col gap-2 text-xs relative z-10">
+  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+  <div className="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+  <span className="font-medium text-gray-700 dark:text-gray-300">{mostReorderedProducts.length > 0 ? mostReorderedProducts[0].name : 'N/A'}</span>
+  <span className="text-gray-500 dark:text-gray-400">({mostReorderedProducts.length > 0 ? mostReorderedProducts[0].reorderCount : 0}x)</span>
+  </div>
+  <div className="flex items-center gap-2 text-rose-500">
+  <div className="w-1.5 h-1.5 rounded-full bg-rose-500"></div>
+  <span className="line-clamp-1">{neverPurchasedProducts.length} produtos nunca comprados</span>
+  </div>
+  </div>
+  </div>
+
  </div>
 
  {/* Charts Grid */}

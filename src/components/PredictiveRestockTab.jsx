@@ -131,9 +131,9 @@ const PredictiveRestockTab = ({ stockData, shipmentsData, monthlyPurchasesData, 
  <div className="w-12 h-12 rounded-sm bg-rose-100 flex items-center justify-center dark:bg-rose-500/10">
  <AlertOctagon className="w-6 h-6 text-rose-500" />
  </div>
- <h3 className="text-3xl font-extrabold text-gray-800 dark:text-white/90 tracking-tight">
- Alerta de Ruptura
- </h3>
+  <h3 className="text-3xl font-space font-bold text-gray-900 dark:text-white mt-1 tracking-tight">
+  Alerta de Ruptura
+  </h3>
  </div>
  <p className="text-gray-500 dark:text-gray-400 text-lg max-w-3xl ml-15">
  O modelo preditivo identificou SKUs de alto giro que <strong className="text-rose-400">estão prestes a acabar</strong> na loja do cliente. Use o gatilho da urgência para puxar a reposição agora.
@@ -173,9 +173,9 @@ const PredictiveRestockTab = ({ stockData, shipmentsData, monthlyPurchasesData, 
  {/* Details Column */}
  <div className="md:col-span-3 flex flex-col justify-between pr-0 md:pr-4">
  <div>
- <h4 className="text-lg font-bold text-gray-800 dark:text-white/90 mb-1.5 leading-tight group-hover:text-rose-100 transition-colors line-clamp-2" title={risk.product}>
- {risk.product}
- </h4>
+  <h4 className="text-lg font-space font-bold text-gray-900 dark:text-white mb-1.5 leading-tight group-hover:text-rose-600 dark:group-hover:text-rose-100 transition-colors line-clamp-2" title={risk.product}>
+  {risk.product}
+  </h4>
  <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
  Em <strong className="text-gray-800 dark:text-white/90">{risk.lastPurchaseMonth}</strong> comprou <strong className="text-gray-800 dark:text-white/90">{risk.lastPurchaseUnits} unidades</strong> por <strong className="text-rose-400">{presentationSettings?.hideCosts ? 'R$ ***,**' : formatCurrency(risk.lastPurchaseRevenue)}</strong>
  </p>

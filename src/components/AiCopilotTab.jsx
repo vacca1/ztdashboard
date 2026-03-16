@@ -82,51 +82,52 @@ const AiCopilotTab = ({ stockData, topProductsData, shipmentsData }) => {
  
  {/* Background Decals */}
  
- {/* Header */}
- <div className="p-6 border-b border-gray-200 dark:border-gray-800 backdrop-blur-md flex items-center justify-between z-10">
- <div className="flex items-center gap-4">
- <div className="w-12 h-12 rounded-sm bg-gradient-to-br from-purple-500 to-brand-600 flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.4)]">
- <Bot className="w-6 h-6 text-white" />
- </div>
- <div>
- <h3 className="text-xl font-bold text-gray-800 dark:text-white/90 tracking-tight flex items-center gap-2">
- Assistente IA 
- <span className="bg-purple-500/20 text-purple-400 text-[10px] font-bold px-2 py-0.5 rounded border border-purple-500/30">GPT-4 Turbo</span>
- </h3>
- <p className="text-sm text-gray-500 dark:text-gray-400">Contexto carregado: BI do Lojista + Estoque ZT</p>
- </div>
- </div>
- 
- <button className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-800 hover:bg-slate-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors border border-gray-200 dark:border-gray-800">
- <BarChart2 className="w-4 h-4" />
- Re-analisar Dados
- </button>
- </div>
+  {/* Header */}
+  <div className="p-6 border-b border-gray-200 dark:border-gray-800 backdrop-blur-md flex items-center justify-between z-10">
+  <div className="flex items-center gap-4">
+  <div className="w-12 h-12 rounded-sm bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-stroke dark:border-strokedark">
+  <Bot className="w-6 h-6 text-slate-500 dark:text-slate-400" />
+  </div>
+  <div>
+  <h3 className="text-xl font-space font-bold text-gray-900 dark:text-white mt-1 tracking-tight flex items-center gap-2">
+  Assistente IA 
+  <span className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded border border-stroke dark:border-strokedark uppercase tracking-wider">ZT-COPILOT</span>
+  </h3>
+  <p className="text-sm text-gray-500 dark:text-gray-400">Contexto carregado: BI do Lojista + Estoque ZT</p>
+  </div>
+  </div>
+  
+  <button className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-sm text-sm font-medium transition-colors border border-stroke dark:border-strokedark">
+  <BarChart2 className="w-4 h-4" />
+  Re-analisar Dados
+  </button>
+  </div>
 
- {/* Chat Area */}
- <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-slate-700 z-10">
- {messages.map((msg) => (
- <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
- <div className={`flex gap-4 max-w-[80%] ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
- 
- {/* Avatar */}
- <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg ${
- msg.sender === 'user' ? 'bg-slate-700 border border-slate-600' : 'bg-gradient-to-br from-purple-500 to-brand-600 border border-purple-400/30'
- }`}>
- {msg.sender === 'user' ? <User className="w-5 h-5 text-gray-700 dark:text-gray-300" /> : <Bot className="w-5 h-5 text-white" />}
- </div>
+  {/* Chat Area */}
+  <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-slate-700 z-10">
+  {messages.map((msg) => (
+  <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+  <div className={`flex gap-4 max-w-[80%] ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+  
+  {/* Avatar */}
+  <div className={`w-10 h-10 rounded-sm flex items-center justify-center shrink-0 border ${
+  msg.sender === 'user' ? 'bg-slate-100 dark:bg-slate-800 border-stroke dark:border-strokedark' : 'bg-brand-500 border-brand-600'
+  }`}>
+  {msg.sender === 'user' ? <User className="w-5 h-5 text-slate-500 dark:text-slate-400" /> : <Bot className="w-5 h-5 text-white" />}
+  </div>
 
- {/* Bubble */}
- <div className={`p-4 rounded-sm relative ${
- msg.sender === 'user' 
- ? 'bg-slate-700 text-white rounded-tr-sm' 
- : ' border border-purple-500/20 text-gray-800 dark:text-white/90 rounded-tl-sm '
- }`}>
- <p className="text-sm leading-relaxed">{msg.text}</p>
- <span className={`text-[10px] mt-2 block ${msg.sender === 'user' ? 'text-gray-500 dark:text-gray-400 text-right' : 'text-gray-500 dark:text-gray-400 text-left'}`}>
- {msg.timestamp}
- </span>
- </div>
+  {/* Bubble */}
+  <div className={`p-4 rounded-sm relative ${
+  msg.sender === 'user' 
+  ? 'bg-slate-100 dark:bg-slate-800 text-gray-900 dark:text-white border border-stroke dark:border-strokedark' 
+  : 'bg-white dark:bg-white/[0.03] border border-stroke dark:border-strokedark text-gray-800 dark:text-white/90'
+  }`}>
+  <p className="text-sm leading-relaxed">{msg.text}</p>
+  <span className={`text-[10px] mt-2 block ${msg.sender === 'user' ? 'text-gray-500 dark:text-gray-400 text-right' : 'text-gray-500 dark:text-gray-400 text-left'}`}>
+  {msg.timestamp}
+  </span>
+  </div>
+
 
  </div>
  </div>
