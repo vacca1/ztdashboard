@@ -18,17 +18,23 @@ layer(base);
   --color-white: #ffffff;
   --color-black: #09090b; /* Zinc 950 - Industrial Black */
 
-  --color-brand-50: #f8fafc;
-  --color-brand-100: #f1f5f9;
-  --color-brand-200: #e2e8f0;
-  --color-brand-300: #cbd5e1;
-  --color-brand-400: #94a3b8;
-  --color-brand-500: #64748b; /* Slate 500 - Base Industrial */
-  --color-brand-600: #475569;
-  --color-brand-700: #334155;
-  --color-brand-800: #1e293b;
-  --color-brand-900: #0f172a;
-  --color-brand-950: #020617;
+  /* Brand: Violet-Indigo — moderno, analytics, vendas */
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+  --color-brand-200: #ddd6fe;
+  --color-brand-300: #c4b5fd;
+  --color-brand-400: #a78bfa;
+  --color-brand-500: #7c3aed; /* Violet-600 — cor âncora do sistema */
+  --color-brand-600: #6d28d9;
+  --color-brand-700: #5b21b6;
+  --color-brand-800: #4c1d95;
+  --color-brand-900: #2e1065;
+  --color-brand-950: #1a0533;
+
+  /* TailAdmin compatibility (usado em componentes legados) */
+  --color-stroke: #E2E8F0;
+  --color-strokedark: #2E3A47;
+  --color-boxdark: #1e293b;
 
   --color-gray-50: #f9fafb;
   --color-gray-100: #f3f4f6;
@@ -126,6 +132,72 @@ layer(base);
   --z-index-99999: 99999;
   --z-index-999999: 999999;
   --breakpoint-2xsm: 375px;
+
+  /* Soft UI Dashboard shadows */
+  --shadow-soft-xs: 0 2px 4px 0 rgba(0,0,0,0.07);
+  --shadow-soft-sm: 0 3px 10px 0 rgba(0,0,0,0.08);
+  --shadow-soft-md: 0 7px 14px 0 rgba(65,69,88,.1), 0 3px 6px 0 rgba(0,0,0,.07);
+  --shadow-soft-lg: 0 10px 20px 0 rgba(52,58,64,.15);
+  --shadow-soft-xl: 0 20px 27px 0 rgba(0,0,0,0.05);
+  --shadow-soft-brand: 0 4px 20px 0 rgba(124,58,237,0.25);
+  --shadow-soft-success: 0 4px 20px 0 rgba(18,183,106,0.25);
+  --shadow-soft-warning: 0 4px 20px 0 rgba(247,144,9,0.25);
+  --shadow-soft-error: 0 4px 20px 0 rgba(240,68,56,0.25);
+}
+
+/* =============================================
+   SOFT UI DASHBOARD — Utility classes
+   ============================================= */
+@utility soft-card {
+  @apply bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700;
+  box-shadow: var(--shadow-soft-xl);
+}
+
+@utility soft-card-hover {
+  @apply transition-all duration-300 hover:-translate-y-1;
+  &:hover {
+    box-shadow: var(--shadow-soft-lg);
+  }
+}
+
+@utility soft-icon-box {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center text-white;
+}
+
+@utility gradient-brand {
+  background-image: linear-gradient(195deg, #a78bfa, #7c3aed);
+}
+
+@utility gradient-success {
+  background-image: linear-gradient(195deg, #6ce9a6, #12b76a);
+}
+
+@utility gradient-warning {
+  background-image: linear-gradient(195deg, #fec84b, #f79009);
+}
+
+@utility gradient-error {
+  background-image: linear-gradient(195deg, #fda29b, #f04438);
+}
+
+@utility gradient-info {
+  background-image: linear-gradient(195deg, #67e8f9, #0891b2);
+}
+
+@utility gradient-dark {
+  background-image: linear-gradient(195deg, #42424a, #191919);
+}
+
+@utility metric-label {
+  @apply text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400;
+}
+
+@utility metric-value {
+  @apply text-2xl font-bold text-gray-800 dark:text-white font-space;
+}
+
+@utility soft-badge {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold;
 }
 
 @utility text-theme-xs {
@@ -159,8 +231,15 @@ layer(base);
     cursor: pointer;
   }
   body {
-    @apply relative font-normal font-outfit z-1 bg-gray-50;
+    @apply relative font-normal font-outfit z-1 bg-gray-50 dark:bg-gray-900;
   }
+
+  /* TailAdmin legacy compatibility */
+  .border-stroke { border-color: var(--color-stroke); }
+  .dark .border-stroke { border-color: var(--color-strokedark); }
+  .dark\:border-strokedark { border-color: var(--color-strokedark); }
+  .dark .dark\:bg-boxdark { background-color: var(--color-boxdark); }
+  .shadow-default { box-shadow: var(--shadow-soft-xl); }
 }
 
 @utility menu-item {
