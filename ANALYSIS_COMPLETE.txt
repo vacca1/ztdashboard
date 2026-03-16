@@ -1,0 +1,248 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║                  EXCEL FILE STRUCTURE ANALYSIS - COMPLETE                     ║
+║                                                                               ║
+║                     Analysis Date: 2026-03-15 17:41                           ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+
+┌───────────────────────────────────────────────────────────────────────────────┐
+│                           ANALYSIS RESULTS                                    │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+✅ Successfully analyzed 3 Excel files in PLANILHAS directory
+✅ Compared with existing parsers in src/utils/excelParser.js
+✅ Identified all structural mismatches
+✅ Created detailed recommendations for fixes
+
+
+┌───────────────────────────────────────────────────────────────────────────────┐
+│                        FILES ANALYZED                                         │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+📊 MODELO DE ESTOQUE.xlsx
+   • Type: Stock/Inventory
+   • Rows: 50 products
+   • Columns: ITEM, MODELO, QUANTIDADE
+   • Status: ❌ PARSER MISMATCH (expects Nome, Disponível)
+
+📊 MODELO DE COMPRAS CLIENTE.xls  
+   • Type: Monthly Customer Purchases
+   • Rows: 72 products
+   • Columns: ITEM, MODELO, Jan-Dez (14 columns)
+   • Status: ❌ NO MATCHING PARSER (needs new parser)
+
+📊 MODELO DE CHEGADA FUTURA.xlsx
+   • Type: Future Arrivals/Shipments
+   • Rows: 50 products
+   • Columns: ITEM, MODELO, QUANTIDADE
+   • Status: ⚠️  CASE SENSITIVITY ISSUE (expects Item, Quantidade)
+
+
+┌───────────────────────────────────────────────────────────────────────────────┐
+│                       KEY FINDINGS                                            │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+1. Column Name Mismatches
+   ─────────────────────────
+   All files use different column names than parsers expect:
+   • ESTOQUE uses "ITEM" not "Nome"
+   • ESTOQUE uses "QUANTIDADE" not "Disponível para venda"
+   • CHEGADA uses uppercase "ITEM" not "Item"
+   • COMPRAS has monthly columns, not sales totals
+
+2. Case Sensitivity Issues
+   ────────────────────────
+   Current parsers use indexOf() which is case-sensitive:
+   • Files have UPPERCASE headers (ITEM, QUANTIDADE)
+   • Parsers expect mixed case (Item, Quantidade, Nome)
+   • Solution: Use findIndex() with toLowerCase()
+
+3. Structural Differences
+   ───────────────────────
+   COMPRAS file is fundamentally different:
+   • Not a "top products sold" file
+   • Contains 12 month columns (Jan through Dez)
+   • Monthly time-series data, not aggregated totals
+   • Requires completely new parser function
+
+4. Empty Columns
+   ─────────────
+   • MODELO column is 100% empty in ESTOQUE
+   • MODELO column is 100% empty in CHEGADA
+   • MODELO column is 98.6% filled in COMPRAS
+   • Can be ignored in ESTOQUE/CHEGADA, useful in COMPRAS
+
+5. Data Quality
+   ────────────
+   ✓ Quantity values: Mix of integers and decimals (handled correctly)
+   ✓ Floating-point precision issues exist but parseToNumber() handles them
+   ✓ No missing data in quantity columns
+   ✓ Consistent product codes across files
+
+
+┌───────────────────────────────────────────────────────────────────────────────┐
+│                    FIXES REQUIRED                                             │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+Priority 1: Fix parseStockExcel (ESTOQUE)
+──────────────────────────────────────────
+File: src/utils/excelParser.js, lines 86-87
+
+Change:
+  const nameIdx = headers.indexOf('Nome');
+  let qtyIdx = headers.findIndex(h => h && h.includes('Disponível'));
+
+To:
+  const nameIdx = headers.findIndex(h =>
+      h && (h.toLowerCase() === 'nome' || h.toLowerCase() === 'item')
+  );
+  let qtyIdx = headers.findIndex(h =>
+      h && (h.toLowerCase().includes('disponível') ||
+            h.toLowerCase() === 'quantidade')
+  );
+
+
+Priority 2: Fix parseShipmentsExcel (CHEGADA)
+──────────────────────────────────────────────
+File: src/utils/excelParser.js, lines 209-210
+
+Change:
+  const itemIdx = headers.indexOf('Item');
+  const qtyIdx = headers.indexOf('Quantidade');
+
+To:
+  const itemIdx = headers.findIndex(h => h && h.toLowerCase() === 'item');
+  const qtyIdx = headers.findIndex(h => h && h.toLowerCase() === 'quantidade');
+
+
+Priority 3: Create New Parser (COMPRAS)
+────────────────────────────────────────
+File: src/utils/excelParser.js (add new function)
+
+Add function: parseMonthlyPurchasesExcel()
+• Parse ITEM and MODELO columns
+• Parse 12 month columns (Jan, Fev, Mar, Abr, Mai, Jun, Jul, Ago, Set, Out, Nov, Dez)
+• Return monthly time-series data
+• See PARSER_FIX_SUMMARY.md for complete implementation
+
+
+┌───────────────────────────────────────────────────────────────────────────────┐
+│                    DOCUMENTATION FILES CREATED                                │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+📄 STRUCTURE_ANALYSIS_REPORT.md
+   Comprehensive analysis report with:
+   • Complete file structure breakdown
+   • Column-by-column comparison
+   • Sample data from each file
+   • Parser mismatch details
+   • Data quality analysis
+
+📄 PARSER_FIX_SUMMARY.md
+   Quick reference guide with:
+   • Critical issues summary
+   • Exact code changes needed
+   • New parser implementation
+   • Testing checklist
+   • Next steps
+
+📄 quick-reference.txt
+   Visual quick reference with:
+   • ASCII table diagrams
+   • Side-by-side comparisons
+   • Parser status indicators
+   • At-a-glance structure view
+
+📄 ANALYSIS_COMPLETE.txt
+   This file - executive summary
+
+
+┌───────────────────────────────────────────────────────────────────────────────┐
+│                    ANALYSIS SCRIPTS CREATED                                   │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+🔧 analyze-excel-structure.js
+   • Comprehensive structure analyzer
+   • Shows columns, data types, merged cells, formulas
+   • Run: node analyze-excel-structure.js
+
+🔧 detailed-analysis.js
+   • Lists all items and quantities
+   • Shows data quality metrics
+   • Run: node detailed-analysis.js
+
+🔧 compras-full-analysis.js
+   • COMPRAS file monthly breakdown
+   • Shows annual totals per item
+   • Run: node compras-full-analysis.js
+
+🔧 final-structure-report.js
+   • Generates complete structure report
+   • Can be re-run anytime to verify changes
+   • Run: node final-structure-report.js
+
+
+┌───────────────────────────────────────────────────────────────────────────────┐
+│                         NEXT STEPS                                            │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+1. Review the reports:
+   • Read PARSER_FIX_SUMMARY.md for quick overview
+   • Read STRUCTURE_ANALYSIS_REPORT.md for details
+   • Use quick-reference.txt for quick lookups
+
+2. Apply the fixes:
+   • Fix parseStockExcel for ESTOQUE (Priority 1)
+   • Fix parseShipmentsExcel for CHEGADA (Priority 2)
+   • Add parseMonthlyPurchasesExcel for COMPRAS (Priority 3)
+
+3. Test the changes:
+   • Test each parser with actual files
+   • Verify case-insensitive matching works
+   • Check monthly data parsing is correct
+
+4. Update the UI:
+   • May need to update components to handle monthly time-series data
+   • Verify charts/tables work with new data structures
+
+
+┌───────────────────────────────────────────────────────────────────────────────┐
+│                           FILE LOCATIONS                                      │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+Excel Files:
+  /Users/macbook/Documents/DASHBOARD FRANCIEL/PLANILHAS/
+  ├── MODELO DE ESTOQUE.xlsx
+  ├── MODELO DE COMPRAS CLIENTE.xls
+  └── MODELO DE CHEGADA FUTURA.xlsx
+
+Current Parser:
+  /Users/macbook/Documents/DASHBOARD FRANCIEL/src/utils/excelParser.js
+
+Documentation:
+  /Users/macbook/Documents/DASHBOARD FRANCIEL/
+  ├── STRUCTURE_ANALYSIS_REPORT.md
+  ├── PARSER_FIX_SUMMARY.md
+  ├── quick-reference.txt
+  └── ANALYSIS_COMPLETE.txt
+
+Analysis Scripts:
+  /Users/macbook/Documents/DASHBOARD FRANCIEL/
+  ├── analyze-excel-structure.js
+  ├── detailed-analysis.js
+  ├── compras-full-analysis.js
+  └── final-structure-report.js
+
+
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║                          ANALYSIS COMPLETE ✓                                  ║
+║                                                                               ║
+║  All three Excel files have been analyzed and compared with existing parsers.║
+║  Detailed reports and fix recommendations have been generated.                ║
+║                                                                               ║
+║  Review PARSER_FIX_SUMMARY.md to get started with the fixes.                  ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝

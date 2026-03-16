@@ -1,0 +1,199 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                     EXCEL FILES STRUCTURE QUICK REFERENCE                      ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ FILE 1: MODELO DE ESTOQUE.xlsx                                                 │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Sheet: Planilha1                                                               │
+│ Rows: 51 (50 data rows + 1 header)                                             │
+│                                                                                 │
+│ ┌────────┬─────────┬─────────────┐                                            │
+│ │  ITEM  │ MODELO  │ QUANTIDADE  │                                            │
+│ ├────────┼─────────┼─────────────┤                                            │
+│ │ string │ (empty) │   number    │                                            │
+│ └────────┴─────────┴─────────────┘                                            │
+│                                                                                 │
+│ Sample rows:                                                                    │
+│   ACD-340        │ (empty) │ 37.63                                             │
+│   DW-902 POWER   │ (empty) │ 4.349                                             │
+│   DW-602/MAX     │ (empty) │ 4.293                                             │
+│                                                                                 │
+│ ❌ PARSER ISSUE: Expects "Nome" and "Disponível", but file has "ITEM" and     │
+│                  "QUANTIDADE"                                                   │
+└────────────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ FILE 2: MODELO DE COMPRAS CLIENTE.xls                                          │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Sheet: Relatório                                                               │
+│ Rows: 73 (72 data rows + 1 header)                                             │
+│                                                                                 │
+│ ┌──────┬────────┬─────┬─────┬─────┬─────┬─────┬─────┬──────┬──────┬──────┐   │
+│ │ ITEM │ MODELO │ Jan │ Fev │ Mar │ ... │ Out │ Nov │ Dez  │ (14 cols total)│
+│ ├──────┼────────┼─────┼─────┼─────┼─────┼─────┼─────┼──────┤                │
+│ │ str  │  str   │ num │ num │ num │ ... │ num │ num │ num  │                │
+│ └──────┴────────┴─────┴─────┴─────┴─────┴─────┴─────┴──────┘                │
+│                                                                                 │
+│ Sample row:                                                                     │
+│   DD-2 │ MICROFONE DYLAN... │ 0 │ 0 │ 0 │ 0 │ 0 │ 0 │ 0 │ 0 │ 200 │ 380 │...│
+│                                                                                 │
+│ Key features:                                                                   │
+│   • 12 month columns (Jan, Fev, Mar, Abr, Mai, Jun, Jul, Ago, Set, Out,       │
+│     Nov, Dez)                                                                   │
+│   • MODELO column 98.6% filled with full product descriptions                  │
+│   • Monthly quantities are integers                                            │
+│   • Many months have zero values                                               │
+│                                                                                 │
+│ ❌ PARSER ISSUE: No matching parser exists! Expects "Categorias e Produtos",  │
+│                  "Quantidade vendida", "Valor vendido" but file has monthly    │
+│                  purchase data. NEEDS NEW PARSER.                              │
+└────────────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ FILE 3: MODELO DE CHEGADA FUTURA.xlsx                                          │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Sheet: Planilha1                                                               │
+│ Rows: 51 (50 data rows + 1 header)                                             │
+│                                                                                 │
+│ ┌────────┬─────────┬─────────────┐                                            │
+│ │  ITEM  │ MODELO  │ QUANTIDADE  │                                            │
+│ ├────────┼─────────┼─────────────┤                                            │
+│ │ string │ (empty) │   number    │                                            │
+│ └────────┴─────────┴─────────────┘                                            │
+│                                                                                 │
+│ Sample rows:                                                                    │
+│   ACD-340        │ (empty) │ 24                                                │
+│   DW-902 POWER   │ (empty) │ 2342                                              │
+│   DW-602/MAX     │ (empty) │ 3242                                              │
+│                                                                                 │
+│ ⚠️  PARSER ISSUE: Expects "Item" and "Quantidade", but file has "ITEM" and    │
+│                   "QUANTIDADE" (uppercase). Case-sensitive indexOf() will fail.│
+└────────────────────────────────────────────────────────────────────────────────┘
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                              PARSER COMPARISON                                  ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ parseStockExcel() - FOR ESTOQUE FILE                                           │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Location: /Users/macbook/Documents/DASHBOARD FRANCIEL/src/utils/excelParser.js │
+│ Lines: 56-116                                                                   │
+│                                                                                 │
+│ EXPECTS:                          ACTUAL FILE HAS:                             │
+│ ┌─────────────────────────┐      ┌─────────────────────────┐                 │
+│ │ Nome                    │      │ ITEM                    │                 │
+│ │ Disponível para venda   │      │ QUANTIDADE              │                 │
+│ └─────────────────────────┘      └─────────────────────────┘                 │
+│                                                                                 │
+│ Status: ❌ WILL FAIL                                                           │
+│ Error: "Colunas 'Nome' ou 'Disponível para venda' não encontradas"            │
+└────────────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ parseTopProductsExcel() - FOR COMPRAS FILE?                                    │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Location: /Users/macbook/Documents/DASHBOARD FRANCIEL/src/utils/excelParser.js │
+│ Lines: 121-174                                                                  │
+│                                                                                 │
+│ EXPECTS:                          ACTUAL FILE HAS:                             │
+│ ┌─────────────────────────┐      ┌─────────────────────────┐                 │
+│ │ Categorias e Produtos   │      │ ITEM                    │                 │
+│ │ Quantidade vendida      │      │ MODELO                  │                 │
+│ │ Valor vendido           │      │ Jan, Fev, Mar, ..., Dez │                 │
+│ └─────────────────────────┘      └─────────────────────────┘                 │
+│                                                                                 │
+│ Status: ❌ COMPLETE MISMATCH                                                   │
+│ Error: "Cabeçalhos não encontrados"                                           │
+│ Note: COMPRAS file is monthly purchase data, not top products sold             │
+└────────────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ parseShipmentsExcel() - FOR CHEGADA FILE                                       │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ Location: /Users/macbook/Documents/DASHBOARD FRANCIEL/src/utils/excelParser.js │
+│ Lines: 179-232                                                                  │
+│                                                                                 │
+│ EXPECTS:                          ACTUAL FILE HAS:                             │
+│ ┌─────────────────────────┐      ┌─────────────────────────┐                 │
+│ │ Item                    │      │ ITEM (uppercase)        │                 │
+│ │ Quantidade              │      │ QUANTIDADE (uppercase)  │                 │
+│ └─────────────────────────┘      └─────────────────────────┘                 │
+│                                                                                 │
+│ Status: ⚠️  WILL FAIL (case sensitivity)                                       │
+│ Issue: Uses indexOf() which is case-sensitive                                  │
+│ Fix: Use case-insensitive findIndex() instead                                  │
+└────────────────────────────────────────────────────────────────────────────────┘
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                              RECOMMENDED FIXES                                  ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+PRIORITY 1: Fix parseStockExcel() for ESTOQUE
+─────────────────────────────────────────────────────────────────────────────────
+Change line 86-87 from:
+    const nameIdx = headers.indexOf('Nome');
+    let qtyIdx = headers.findIndex(h => h && h.includes('Disponível'));
+
+To:
+    const nameIdx = headers.findIndex(h =>
+        h && (h.toLowerCase() === 'nome' || h.toLowerCase() === 'item')
+    );
+    let qtyIdx = headers.findIndex(h =>
+        h && (h.toLowerCase().includes('disponível') ||
+              h.toLowerCase() === 'quantidade')
+    );
+
+PRIORITY 2: Fix parseShipmentsExcel() for CHEGADA
+─────────────────────────────────────────────────────────────────────────────────
+Change line 209-210 from:
+    const itemIdx = headers.indexOf('Item');
+    const qtyIdx = headers.indexOf('Quantidade');
+
+To:
+    const itemIdx = headers.findIndex(h => h && h.toLowerCase() === 'item');
+    const qtyIdx = headers.findIndex(h => h && h.toLowerCase() === 'quantidade');
+
+PRIORITY 3: Create NEW parser for COMPRAS
+─────────────────────────────────────────────────────────────────────────────────
+Create a new function: parseMonthlyPurchasesExcel()
+
+This should:
+1. Find ITEM and MODELO columns
+2. Find all 12 month columns (Jan, Fev, Mar, Abr, Mai, Jun, Jul, Ago, Set,
+   Out, Nov, Dez)
+3. Parse monthly quantities
+4. Return structure like:
+   {
+     name: string,
+     modelo: string,
+     monthly: { jan: number, fev: number, ..., dez: number },
+     total: number
+   }
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                              KEY FINDINGS                                       ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+1. All three files have DIFFERENT structures than expected by parsers
+2. ESTOQUE and CHEGADA have the SAME 50 products
+3. COMPRAS has 72 products (superset of ESTOQUE/CHEGADA)
+4. MODELO column is EMPTY in ESTOQUE and CHEGADA (100% empty)
+5. MODELO column is FILLED in COMPRAS (98.6% filled)
+6. COMPRAS contains MONTHLY time-series data, not sales totals
+7. All parsers use case-sensitive string matching, but files use uppercase headers
+8. The parseToNumber() helper function works well for mixed int/decimal values
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                           FILES CREATED FOR ANALYSIS                            ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+✓ analyze-excel-structure.js      - Detailed structure analyzer
+✓ detailed-analysis.js             - Data quality and item listing
+✓ compras-full-analysis.js         - COMPRAS monthly breakdown
+✓ final-structure-report.js        - Complete report generator
+✓ STRUCTURE_ANALYSIS_REPORT.md     - Comprehensive written report
+✓ quick-reference.txt              - This file (quick lookup)
+
+Run any script with: node <filename>.js
