@@ -1,221 +1,231 @@
+/**
+ * SmartBundlesTab — Kits Estratégicos
+ * Kits baseados nos dados reais de compra e estoque
+ */
 import React, { useMemo } from 'react';
-import { Package, Zap, Crown, ArrowRight, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Package, Zap, Crown, ArrowRight, CheckCircle2, ShieldCheck, Download } from 'lucide-react';
+import { useApp } from '../context/AppContext';
+import { exportOverview } from '../utils/exportUtils';
 
-const SmartBundlesTab = ({ stockData, topProductsData, onAddToCart, presentationSettings }) => {
- 
- const formatCurrency = (val) => {
- return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
- };
+const fmt = (v) =>
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v ?? 0);
 
- // AI Logic: Create Bundles based on Stock and Market Data
- const bundles = useMemo(() => {
- if (!stockData || !topProductsData) return [];
+export default function SmartBundlesTab() {
+  const { stockData, filteredMonthlyData, addToCart, presentationSettings, clientProfile, periodFilter } = useApp();
 
- // Bundle 1: Starter / Fast Mover (Decoy)
- // Takes the top 3 best selling items from stock
- const fastMovers = stockData
- .filter(s => topProductsData.find(t => t.name.includes(s.name) || s.name.includes(t.name)))
- .slice(0, 3)
- .map((s, idx) => ({ ...s, mockCost: 80 + (idx * 20) })); // Mocking costs
+  const bundles = useMemo(() => {
+    if (!stockData || !filteredMonthlyData) return [];
 
- const fastMoversCost = fastMovers.reduce((acc, curr) => acc + curr.mockCost, 0);
- const fastMoversRetail = fastMoversCost * 2; // 100% markup
+    // Sort monthly data by revenue
+    const sortedByRevenue = [...filteredMonthlyData].sort((a, b) => (b.totalRevenue ?? 0) - (a.totalRevenue ?? 0));
 
- // Bundle 2: Diversification (Target)
- // Takes items that have high stock but might not be the absolute top sellers, 
- // mixed with one top seller.
- const midTier = stockData.slice(4, 9).map((s, idx) => ({ ...s, mockCost: 100 + (idx * 15) }));
- const midTierCost = midTier.reduce((acc, curr) => acc + curr.mockCost, 0);
- let midTierRetail = midTierCost * 2.5; // 150% markup to make it look like a huge roi
+    // Fast movers: top 3 by revenue that exist in stock
+    const fastMovers = sortedByRevenue
+      .filter((p) => stockData.find((s) => s.code === p.code || s.name === p.name))
+      .slice(0, 3)
+      .map((p) => {
+        const inStock = stockData.find((s) => s.code === p.code || s.name === p.name);
+        const costPerUnit = p.totalRevenue / (p.totalUnits || 1);
+        return { ...p, quantity: inStock?.quantity ?? 0, costPerUnit };
+      });
 
- // Bundle 3: The Dominator (Premium Anchor)
- // A huge package of everything
- const premium = stockData.slice(0, 15).map((s, idx) => ({ ...s, mockCost: 150 + (idx * 5) }));
- const premiumCost = premium.reduce((acc, curr) => acc + curr.mockCost, 0);
- const premiumRetail = premiumCost * 2.2; // 120% markup
- 
- // Faking a supplier discount to trigger urgency
- const discountAmount = premiumCost * 0.15; 
- const finalPremiumCost = premiumCost - discountAmount;
+    const fastMoversCost   = fastMovers.reduce((s, p) => s + p.costPerUnit, 0);
+    const fastMoversRetail = fastMoversCost * 2;
 
- return [
- {
- id: 'bundle-1',
- name: 'Kit Giro Rápido',
- icon: <Zap className="w-6 h-6 text-amber-400" />,
- badge: 'Pé na Porta',
- badgeClass: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
- borderColor: 'border-slate-700',
- bgGradient: 'from-slate-800 to-slate-900',
- items: fastMovers,
- reason: 'Os campeões de vendas da região. Zero risco. Venda garantida na primeira semana.',
- investment: fastMoversCost,
- originalInvestment: fastMoversCost,
- revenue: fastMoversRetail,
- profit: fastMoversRetail - fastMoversCost,
- popular: false,
- features: [
- 'Giro em até 15 dias',
- 'Margem segura de 100%',
- 'Baixo investimento inicial'
- ]
- },
- {
- id: 'bundle-2',
- name: 'Kit Expansão de Lucro',
- icon: <Package className="w-6 h-6 text-brand-400" />,
- badge: 'Escolha Inteligente',
- badgeClass: 'bg-brand-500/10 text-brand-300 border-brand-500/20',
- borderColor: 'border-brand-500/50 shadow-[0_0_30px_rgba(70,108,192,0.15)] ring-1 ring-brand-500/20 scale-[1.02]',
- bgGradient: 'from-slate-800 via-brand-900/10 to-slate-900',
- items: midTier,
- reason: 'Criado pelo algoritmo para maximizar markup. Produtos de alta percepção de valor pelo consumidor final.',
- investment: midTierCost,
- originalInvestment: midTierCost,
- revenue: midTierRetail,
- profit: midTierRetail - midTierCost,
- popular: true,
- features: [
- 'Margem agressiva (Top ROI)',
- 'Diferenciação da concorrência local',
- 'Mix balanceado (Acessórios + Equipamentos)'
- ]
- },
- {
- id: 'bundle-3',
- name: 'Kit Dominação de Vitrine',
- icon: <Crown className="w-6 h-6 text-yellow-500" />,
- badge: 'Exclusividade',
- badgeClass: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
- borderColor: 'border-yellow-500/30',
- bgGradient: 'from-slate-800 to-slate-900',
- items: premium,
- reason: 'Posicione sua loja como a referência absoluta da marca na sua cidade. Portfólio completo.',
- investment: finalPremiumCost,
- originalInvestment: premiumCost,
- revenue: premiumRetail,
- profit: premiumRetail - finalPremiumCost,
- popular: false,
- features: [
- 'Desconto de parceiro B2B (-15%)',
- 'Status de Revenda Ouro',
- 'Ticket médio do seu cliente duplicado'
- ]
- }
- ];
+    // Mid tier: products 4-8 by revenue
+    const midTier = sortedByRevenue
+      .filter((p) => stockData.find((s) => s.code === p.code || s.name === p.name))
+      .slice(3, 8)
+      .map((p) => {
+        const costPerUnit = p.totalRevenue / (p.totalUnits || 1);
+        return { ...p, costPerUnit };
+      });
 
- }, [stockData, topProductsData]);
+    const midTierCost   = midTier.reduce((s, p) => s + p.costPerUnit, 0);
+    const midTierRetail = midTierCost * 2.5;
 
- const addBundleToCart = (bundle) => {
- // Flattens the bundle items and adds them to cart
- bundle.items.forEach(item => {
- onAddToCart({
- id: `kit-${item.name}`,
- product: item.name,
- costPrice: item.mockCost,
- suggestedRetail: item.mockCost * 2, // arbitrary
- qty: 1
- });
- });
- };
+    // Premium: top 15 by revenue
+    const premium = sortedByRevenue
+      .filter((p) => stockData.find((s) => s.code === p.code || s.name === p.name))
+      .slice(0, 15)
+      .map((p) => {
+        const costPerUnit = p.totalRevenue / (p.totalUnits || 1);
+        return { ...p, costPerUnit };
+      });
 
- return (
- <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 h-full flex flex-col pb-24 relative zoom-in-[0.98]">
- 
- {/* Animated Background Blobs for Premium Feel */}
- 
- {/* Header */}
- <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
- <div>
- <h3 className="text-3xl font-extrabold text-gray-800 dark:text-white/90 tracking-tight flex items-center gap-3">
- Kits Inteligentes
- <span className="bg-brand-500/20 text-brand-400 text-xs font-bold px-2.5 py-1 rounded-full border border-brand-500/30 uppercase tracking-widest">
- Automático
- </span>
- </h3>
- <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg">Estratégias de mix prontas para otimizar sua vitrine e multiplicar margens.</p>
- </div>
- </div>
+    const premiumCost       = premium.reduce((s, p) => s + p.costPerUnit, 0);
+    const premiumRetail     = premiumCost * 2.2;
+    const discountedPremium = premiumCost * 0.85; // 15% off
 
- {/* Pricing Tables (Smart Bundles) */}
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
- {bundles.map((bundle) => (
- <div key={bundle.id} className={`rounded-sm border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] shadow-theme-sm rounded-sm relative flex flex-col transition-all border ${bundle.borderColor}`}>
- 
- {/* Popular Badge */}
- {bundle.popular && (
- <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-600 to-brand-400 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(70,108,192,0.5)] z-10 flex items-center gap-1.5">
- <ShieldCheck className="w-4 h-4" />
- RECOMENDADO PELA I.A.
- </div>
- )}
+    return [
+      {
+        id:          'bundle-1',
+        name:        'Kit Giro Rápido',
+        icon:        Zap,
+        iconColor:   'gradient-warning',
+        badge:       'Pé na Porta',
+        highlight:   false,
+        items:       fastMovers,
+        reason:      'Campeões de venda com histórico comprovado. Zero risco, giro garantido.',
+        investment:  fastMoversCost,
+        revenue:     fastMoversRetail,
+        profit:      fastMoversRetail - fastMoversCost,
+        features:    ['Giro em até 15 dias', 'Margem de 100%', 'Baixo investimento'],
+      },
+      {
+        id:          'bundle-2',
+        name:        'Kit Expansão de Lucro',
+        icon:        Package,
+        iconColor:   'gradient-brand',
+        badge:       'Escolha Inteligente',
+        highlight:   true,
+        items:       midTier,
+        reason:      'Mix balanceado para maximizar margem e diferenciar da concorrência.',
+        investment:  midTierCost,
+        revenue:     midTierRetail,
+        profit:      midTierRetail - midTierCost,
+        features:    ['Margem agressiva (150%)', 'Diferenciação regional', 'Mix balanceado'],
+      },
+      {
+        id:          'bundle-3',
+        name:        'Kit Dominação Total',
+        icon:        Crown,
+        iconColor:   'gradient-dark',
+        badge:       'Exclusividade',
+        highlight:   false,
+        originalInvestment: premiumCost,
+        items:       premium,
+        reason:      'Portfólio completo para ser a referência absoluta da marca na sua região.',
+        investment:  discountedPremium,
+        revenue:     premiumRetail,
+        profit:      premiumRetail - discountedPremium,
+        features:    ['Desconto parceiro -15%', 'Status Revendedor Ouro', 'Ticket médio duplicado'],
+      },
+    ];
+  }, [stockData, filteredMonthlyData]);
 
- <div className={`p-8 rounded-t-3xl bg-gradient-to-br ${bundle.bgGradient} flex-1 flex flex-col`}>
- <div className="flex justify-between items-start mb-6">
- <div className={`p-3 rounded-sm bg-gray-50 dark:bg-gray-800 border ${bundle.borderColor}`}>
- {bundle.icon}
- </div>
- <span className={`px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wider ${bundle.badgeClass}`}>
- {bundle.badge}
- </span>
- </div>
+  const addBundleToCart = (bundle) => {
+    bundle.items.forEach((item) => {
+      addToCart({
+        id:             `kit-${item.code || item.name}`,
+        product:        item.name,
+        costPrice:      item.costPerUnit,
+        suggestedRetail: item.costPerUnit * 2,
+        qty:            1,
+      });
+    });
+  };
 
- <h4 className="text-2xl font-bold text-gray-800 dark:text-white/90 mb-2">{bundle.name}</h4>
- <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 min-h-[40px] leading-relaxed">{bundle.reason}</p>
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h3 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+            Kits Estratégicos
+            <span className="soft-badge bg-brand-50 text-brand-600 border border-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:border-brand-500/20 text-[10px]">
+              Automático
+            </span>
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            Estratégias de mix prontas para otimizar vitrine e multiplicar margens.
+          </p>
+        </div>
+        <button
+          onClick={() => exportOverview({ monthlyPurchasesData: filteredMonthlyData, stockData, clientProfile, periodFilter })}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          <Download className="w-4 h-4" />
+          Exportar
+        </button>
+      </div>
 
- <div className="space-y-4 mb-8">
- {bundle.features.map((feat, i) => (
- <div key={i} className="flex items-start gap-3">
- <CheckCircle2 className={`w-5 h-5 shrink-0 ${bundle.popular ? 'text-brand-400' : 'text-gray-500 dark:text-gray-400'}`} />
- <span className="text-gray-700 dark:text-gray-300 text-sm">{feat}</span>
- </div>
- ))}
- </div>
+      {/* Bundle cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {bundles.map((bundle) => {
+          const Icon = bundle.icon;
+          return (
+            <div
+              key={bundle.id}
+              className={`soft-card relative flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 ${
+                bundle.highlight ? 'ring-2 ring-brand-400 dark:ring-brand-500 scale-[1.02]' : ''
+              }`}
+            >
+              {bundle.highlight && (
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 gradient-brand text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-[var(--shadow-soft-brand)] flex items-center gap-1 z-10 whitespace-nowrap">
+                  <ShieldCheck className="w-3 h-3" />
+                  RECOMENDADO PELA IA
+                </div>
+              )}
 
- <div className="mt-auto space-y-2 mb-6">
- <div className="flex justify-between text-sm">
- <span className="text-gray-500 dark:text-gray-400">Total de Itens</span>
- <span className="text-white font-bold">{bundle.items.length} SKUs</span>
- </div>
- </div>
- </div>
+              {/* Header */}
+              <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`soft-icon-box ${bundle.iconColor} w-12 h-12`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <span className={`soft-badge border text-[10px] ${
+                    bundle.highlight
+                      ? 'bg-brand-50 text-brand-600 border-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:border-brand-500/20'
+                      : 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+                  }`}>
+                    {bundle.badge}
+                  </span>
+                </div>
+                <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-1">{bundle.name}</h4>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{bundle.reason}</p>
+              </div>
 
- {/* Financial Anchoring Footer */}
- <div className="p-8 border-t border-gray-200 dark:border-gray-800 rounded-b-3xl">
- 
- {bundle.originalInvestment > bundle.investment && (
- <div className="flex justify-center mb-1 text-sm text-gray-500 dark:text-gray-400 line-through">
- {presentationSettings?.hideCosts ? 'R$ ***,**' : formatCurrency(bundle.originalInvestment)}
- </div>
- )}
+              {/* Features */}
+              <div className="p-6 flex-1">
+                <ul className="space-y-2">
+                  {bundle.features.map((f, i) => (
+                    <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                      <CheckCircle2 className={`w-4 h-4 shrink-0 ${bundle.highlight ? 'text-brand-500' : 'text-success-500'}`} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-4 flex justify-between text-xs text-gray-500 dark:text-gray-400 py-2 border-t border-gray-100 dark:border-gray-700">
+                  <span>Total de itens</span>
+                  <span className="font-bold text-gray-700 dark:text-gray-300">{bundle.items.length} SKUs</span>
+                </div>
+              </div>
 
- <div className="flex items-center justify-between mb-2">
- <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Investimento</span>
- <span className="text-2xl font-extrabold text-gray-800 dark:text-white/90">{presentationSettings?.hideCosts ? 'R$ ***,**' : formatCurrency(bundle.investment)}</span>
- </div>
- 
- <div className="flex items-center justify-between mb-8 p-3 rounded-sm bg-emerald-500/10 border border-emerald-500/20">
- <span className="text-xs font-bold text-emerald-400/80 uppercase tracking-wider">Faturamento Est.</span>
- <span className="text-xl font-extrabold text-emerald-400">{presentationSettings?.hideCosts ? 'R$ ***,**' : formatCurrency(bundle.revenue)}</span>
- </div>
-
- <button 
- onClick={() => addBundleToCart(bundle)}
- className={`w-full py-4 rounded-sm flex items-center justify-center gap-2 font-bold transition-all
- ${bundle.popular 
- ? 'bg-brand-500 text-white hover:bg-brand-400 shadow-[0_0_30px_rgba(70,108,192,0.3)] hover:scale-105' 
- : 'bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-slate-700 hover:text-white border border-gray-200 dark:border-gray-800'}`}
- >
- Adicionar Kit ao Pedido
- {bundle.popular && <ArrowRight className="w-5 h-5" />}
- </button>
- </div>
- </div>
- ))}
- </div>
-
- </div>
- );
-};
-
-export default SmartBundlesTab;
+              {/* Footer: pricing */}
+              <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 rounded-b-2xl">
+                {bundle.originalInvestment && bundle.originalInvestment > bundle.investment && (
+                  <p className="text-center text-xs text-gray-400 line-through mb-1">
+                    {presentationSettings?.hideCosts ? 'R$ •••' : fmt(bundle.originalInvestment)}
+                  </p>
+                )}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Investimento</span>
+                  <span className="text-xl font-extrabold text-gray-800 dark:text-white font-space">
+                    {presentationSettings?.hideCosts ? 'R$ •••' : fmt(bundle.investment)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-success-50 dark:bg-success-500/10 border border-success-100 dark:border-success-500/20 mb-4">
+                  <span className="text-xs font-bold text-success-600 dark:text-success-400 uppercase tracking-wider">Fat. Estimado</span>
+                  <span className="text-lg font-extrabold text-success-600 dark:text-success-400">
+                    {presentationSettings?.hideCosts ? 'R$ •••' : fmt(bundle.revenue)}
+                  </span>
+                </div>
+                <button
+                  onClick={() => addBundleToCart(bundle)}
+                  className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-sm transition-all ${
+                    bundle.highlight
+                      ? 'gradient-brand text-white shadow-[var(--shadow-soft-brand)] hover:scale-105'
+                      : 'border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Adicionar ao Pedido
+                  {bundle.highlight && <ArrowRight className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
